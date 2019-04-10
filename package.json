@@ -1,0 +1,14 @@
+{
+  "name": "reFactoring",
+  "version": "1.0.0",
+  "description": "重构",
+  "main": "main.js",
+  "author": "lxw-peter",
+  "license": "MIT",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^24.7.1"
+  }
+}
