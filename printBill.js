@@ -15,8 +15,7 @@ function statement (invoice, plays) {
     maximumFractionDigits: 2
   }).format
   for (let perf of invoice.performances) {
-    // let play = playFor(perf)
-    let thisAmount = amountFor(perf, playFor(perf))
+    let thisAmount = amountFor(perf)
     volumeCredits += Math.max(perf.audience - 30, 0)
     if (playFor(perf).type === 'comedy') volumeCredits += Math.floor(perf.audience / 5)
     result += `${playFor(perf).name} : ${format(thisAmount / 100)} (${perf.audience} seats)\n`
@@ -29,9 +28,9 @@ function statement (invoice, plays) {
 
 // 将函数返回值统一为result
 // 修改变量名 perf => aPerformance 不定冠词 a 表示数组array
-function amountFor(aPerformance, play) {
+function amountFor(aPerformance) {
   let result = 0
-  switch (play.type) {
+  switch (playFor(aPerformance).type) {
     case 'tragedy':
       result = 40000
       if (aPerformance.audience > 30) {
