@@ -1,10 +1,7 @@
-const printBill = require('./printBill')
-
-let invoicesPath = './json/invoices.json'
-let playsPath = './json/plays.json'
+const {invoice, plays, statement} = require('./printBill')
 
 test('printBill:',() => {
-  expect(printBill(invoicesPath, playsPath)).toBe(
+  expect(statement(invoice, plays)).toBe(
 `Statement for BigCo
 Hamlet : $650.00 (55 seats)
 As You Like It : $580.00 (35 seats)

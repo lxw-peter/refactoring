@@ -1,5 +1,9 @@
 
 const fs = require('fs')
+const invoicesPath = './json/invoices.json'
+const playsPath = './json/plays.json'
+const invoice = JSON.parse(fs.readFileSync(invoicesPath, 'utf-8'))
+const plays = JSON.parse(fs.readFileSync(playsPath, 'utf-8'))
 
 function statement (invoice, plays) {
   let totalAmount = 0
@@ -11,9 +15,8 @@ function statement (invoice, plays) {
     maximumFractionDigits: 2
   }).format
   for (let perf of invoice.performances) {
-    const play = plays[perf.playID]
-    let thisAmount = amountFor(play, perf)
-
+    let play = plays[perf.playID]
+    let thisAmount = amountFor(perf, play)
     volumeCredits += Math.max(perf.audience - 30, 0)
     if (play.type === 'comedy') volumeCredits += Math.floor(perf.audience / 5)
     result += `${play.name} : ${format(thisAmount / 100)} (${perf.audience} seats)\n`
@@ -25,32 +28,31 @@ function statement (invoice, plays) {
 }
 
 // 将函数返回值统一为result
-function amountFor(play, perf) {
+// 修改变量名 perf => aPerformance 不定冠词 a 表示数组array
+function amountFor(aPerformance, play) {
   let result = 0
   switch (play.type) {
     case 'tragedy':
       result = 40000
-      if (perf.audience > 30) {
-        result += 1000 * (perf.audience - 30)
+      if (aPerformance.audience > 30) {
+        result += 1000 * (aPerformance.audience - 30)
       }
       break
     case 'comedy':
       result = 30000
-      if (perf.audience > 20) {
-        result += 10000 + 500 * (perf.audience - 20)
+      if (aPerformance.audience > 20) {
+        result += 10000 + 500 * (aPerformance.audience - 20)
       }
-      result += 300 * perf.audience
+      result += 300 * aPerformance.audience
       break
     default:
       throw new Error(`unknown type: ${play.type}`)
   }
   return result
 }
-// read json file
-function readFile (...filename) {
-  const invoice = JSON.parse(fs.readFileSync(filename[0], 'utf-8'))
-  const plays = JSON.parse(fs.readFileSync(filename[1], 'utf-8'))
-  return statement(invoice, plays)
-}
 
-module.exports = readFile
+module.exports = {
+  invoice,
+  plays,
+  statement,
+} 
