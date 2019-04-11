@@ -10,12 +10,9 @@ function statement (invoice, plays) {
   let result = `Statement for ${invoice.customer}\n`
   for (let perf of invoice.performances) {
     result += `${playFor(perf).name} : ${usd(amountFor(perf))} (${perf.audience} seats)\n`
-    totalAmount += amountFor(perf)
   }
-  let volumeCredits = totalVolumeCredits()
- 
-  result += `Amount owed is ${usd(totalAmount)}\n`
-  result += `You earned ${volumeCredits} credits\n`
+  result += `Amount owed is ${usd(totalAmountFor())}\n`
+  result += `You earned ${totalVolumeCredits()} credits\n`
   return result
 }
 
@@ -43,6 +40,14 @@ function amountFor(aPerformance) {
   return result
 }
 
+function totalAmountFor() {
+  let totalAmount = 0
+  for (let perf of invoice.performances) {
+    totalAmount += amountFor(perf)
+  }
+  return totalAmount
+}
+
 function playFor(aPerformance) {
   return plays[aPerformance.playID]
 }
@@ -54,6 +59,14 @@ function volumeCreditsFor(aPerformance) {
   return result
 }
 
+function totalVolumeCredits() {
+  let result = 0
+  for (let perf of invoice.performances) {
+    result += volumeCreditsFor(perf)
+  }
+  return result
+}
+
 function usd(aNumber) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -62,13 +75,7 @@ function usd(aNumber) {
   }).format(aNumber / 100)
 }
 
-function totalVolumeCredits() {
-  let volumeCredits = 0
-  for (let perf of invoice.performances) {
-    volumeCredits += volumeCreditsFor(perf)
-  }
-  return volumeCredits
-}
+
 
 module.exports = {
   invoice,
