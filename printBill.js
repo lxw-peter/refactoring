@@ -7,19 +7,14 @@ const plays = JSON.parse(fs.readFileSync(playsPath, 'utf-8'))
 
 function statement (invoice, plays) {
   let totalAmount = 0
-  let volumeCredits = 0
   let result = `Statement for ${invoice.customer}\n`
-  const format = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 2
-  }).format
   for (let perf of invoice.performances) {
-    volumeCredits += volumeCreditsFor(perf)
-    result += `${playFor(perf).name} : ${format(amountFor(perf) / 100)} (${perf.audience} seats)\n`
+    result += `${playFor(perf).name} : ${usd(amountFor(perf))} (${perf.audience} seats)\n`
     totalAmount += amountFor(perf)
   }
-  result += `Amount owed is ${format(totalAmount / 100)}\n`
+  let volumeCredits = totalVolumeCredits()
+ 
+  result += `Amount owed is ${usd(totalAmount)}\n`
   result += `You earned ${volumeCredits} credits\n`
   return result
 }
@@ -57,6 +52,22 @@ function volumeCreditsFor(aPerformance) {
   result += Math.max(aPerformance.audience - 30, 0)
   if (playFor(aPerformance).type === 'comedy') result += Math.floor(aPerformance.audience / 5)
   return result
+}
+
+function usd(aNumber) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 2
+  }).format(aNumber / 100)
+}
+
+function totalVolumeCredits() {
+  let volumeCredits = 0
+  for (let perf of invoice.performances) {
+    volumeCredits += volumeCreditsFor(perf)
+  }
+  return volumeCredits
 }
 
 module.exports = {
